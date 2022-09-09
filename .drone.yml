@@ -1,0 +1,17 @@
+kind: pipeline
+type: exec
+name: default
+
+clone:
+  disable: true
+
+steps:
+  - name: install pre-requisites
+    commands:
+      - cd /tmp/checkout
+      - gem install bundler
+      - bundle install 
+  - name: execute tests
+    commands:
+      - cd /tmp/checkout
+      - bundle exec rake test
