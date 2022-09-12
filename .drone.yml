@@ -10,7 +10,7 @@ steps:
   - name: initialize rbenv
     commands:
       - cd /tmp/checkout
-      - rbenv init
+      # - rbenv init
       - sudo gem install bundler
       - bundle install
   - name: run unit tests
