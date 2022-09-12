@@ -1,0 +1,19 @@
+kind: pipeline
+type: exec
+name: default
+# comment
+
+clone:
+  disable: true
+
+steps:
+  - name: initialize rbenv
+    commands:
+      - cd /tmp/checkout
+      - rbenv init
+      - gem install bundler
+      - bundle install
+  - name: run unit tests
+    commands:
+      - cd /tmp/checkout
+      - bundle exec rake test
