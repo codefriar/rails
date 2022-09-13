@@ -10,6 +10,7 @@ steps:
   - name: initializing dev environment
     commands:
       - cd /tmp/checkout
+      - whoami
       - gem install bundler
       - bundle install
   - name: run unit tests
