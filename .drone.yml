@@ -7,7 +7,7 @@ clone:
   disable: true
 
 steps:
-  - name: initialize rbenv
+  - name: initializing dev environment
     commands:
       - cd /tmp/checkout
       - gem install bundler
