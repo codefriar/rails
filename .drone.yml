@@ -1,7 +1,6 @@
 kind: pipeline
 type: exec
 name: default
-# foo
 
 clone:
   disable: true
