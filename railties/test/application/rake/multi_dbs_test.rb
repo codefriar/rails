@@ -821,6 +821,38 @@ module ApplicationTests
         assert_match(/You have 1 pending migration/, output)
       end
 
+      test "db:version works on all databases" do
+        require "#{app_path}/config/environment"
+        Dir.chdir(app_path) do
+          generate_models_for_animals
+          primary_version = File.basename(Dir[File.join(app_path, "db", "migrate", "*.rb")].first).to_i
+          animals_version = File.basename(Dir[File.join(app_path, "db", "animals_migrate", "*.rb")].first).to_i
+
+          rails("db:migrate")
+          output = rails("db:version")
+
+          assert_match(/database: db\/development.sqlite3\nCurrent version: #{primary_version}/, output)
+          assert_match(/database: db\/development_animals.sqlite3\nCurrent version: #{animals_version}/, output)
+        end
+      end
+
+      test "db:version:namespace works" do
+        require "#{app_path}/config/environment"
+        Dir.chdir(app_path) do
+          generate_models_for_animals
+          primary_version = File.basename(Dir[File.join(app_path, "db", "migrate", "*.rb")].first).to_i
+          animals_version = File.basename(Dir[File.join(app_path, "db", "animals_migrate", "*.rb")].first).to_i
+
+          rails("db:migrate")
+
+          output = rails("db:version:primary")
+          assert_match(/Current version: #{primary_version}/, output)
+
+          output = rails("db:version:animals")
+          assert_match(/Current version: #{animals_version}/, output)
+        end
+      end
+
       test "db:setup works on all databases" do
         require "#{app_path}/config/environment"
         db_setup
@@ -956,6 +988,19 @@ module ApplicationTests
         RUBY
 
         db_create_and_drop_namespace("primary", "db/development.sqlite3")
+      end
+
+      test "db:create and db:drop don't raise errors when loading YAML containing ERB in database keys" do
+        app_file "config/database.yml", <<-YAML
+          development:
+            <% 5.times do |i| %>
+            shard_<%= i %>:
+              database: db/development_shard_<%= i %>.sqlite3
+              adapter: sqlite3
+            <% end %>
+        YAML
+
+        db_create_and_drop_namespace("shard_3", "db/development_shard_3.sqlite3")
       end
 
       test "schema generation when dump_schema_after_migration is true schema_dump is false" do
